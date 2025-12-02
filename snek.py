@@ -11,7 +11,6 @@ label = tk.Label(text="Главное Меню")
 label.pack()
 current_buttons = []
 buttons = ["Начать игру", "Настройки", "Выход"]
-food = [5, 0, 50, 0]
 
 canvas = tk.Canvas(
     root,
@@ -20,17 +19,38 @@ canvas = tk.Canvas(
     bg = "black"
 )
 canvas.pack()
+directions = ['Up', 'Down', 'Left', 'Right']
+snake = [(100, 100), (90, 100), (80, 100)]
+direction = 'Right'
+score = 0
+game_over = False
 
 def create_food():
-    x = random.randint(0, (WIDTH - CELL_SIZE) // CELL_SIZE) *CELL_SIZE
-    y = random.randint(0, (HEIGHT - CELL_SIZE) // CELL_SIZE) *CELL_SIZE
+    while True:
+        x = random.randint(0, (WIDTH - CELL_SIZE) // CELL_SIZE) *CELL_SIZE
+        y = random.randint(0, (HEIGHT - CELL_SIZE) // CELL_SIZE) *CELL_SIZE
+        if (x, y) not in snake:
+            return (x, y)
+food = create_food()    
+
+def draw_food():
     canvas.create_rectangle(
         food[0], food[1],
         food[0] + CELL_SIZE,
         food[1] + CELL_SIZE,
-        fill="red")
+        fill='red',
+        )
 
-    
+def draw_snake():
+    for segment in snake:
+        canvas.create_rectangle(
+            segment[0], segment[1],
+            segment[0] + CELL_SIZE,
+            segment[1] +CELL_SIZE,
+            fill='green',
+            outline='darkgreen',
+            )
+        
 def clear_screen():
     for btn in current_buttons:
         btn.destroy()
@@ -40,9 +60,12 @@ def exit_game():
     root.destroy()
 
 def start_game():
+    global game, food, score
     clear_screen()
     canvas.delete("all")
-    create_food()
+    draw_food()
+    draw_snake()
+    root.after(DELAY, start_game)
 
 
 def settings():
@@ -69,8 +92,6 @@ def main_menu():
             
         button.place(x=WIDTH//2.5, y=HEIGHT//3 + i*45)
         current_buttons.append(button)
-main_menu()
 
-
-    
-root.mainloop()
+main_menu()    
+root.mainloop() 
