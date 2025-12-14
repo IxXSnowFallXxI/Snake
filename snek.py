@@ -11,6 +11,8 @@ label = tk.Label(text="Главное Меню")
 label.pack()
 current_buttons = []
 buttons = ["Начать игру", "Настройки", "Выход"]
+directions = ["Up", "Down", "Left", "Right"]
+
 
 canvas = tk.Canvas(
     root,
@@ -24,6 +26,7 @@ snake = [(100, 100), (90, 100), (80, 100)]
 direction = 'Right'
 score = 0
 game_over = False
+
 
 def create_food():
     while True:
@@ -50,7 +53,30 @@ def draw_snake():
             fill='green',
             outline='darkgreen',
             )
-        
+def move_snake():
+    head_x, head_y = snake[0]
+    if direction == "Up":
+        new_head = (head_x, head_y - CELL_SIZE)
+    elif direction == "Down":
+        new_head = (head_x, head_y + CELL_SIZE)
+    elif direction == "Left":
+        new_head = (head_x - CELL_SIZE, head_y)
+    elif direction == "Right":
+        new_head = (head_x + CELL_SIZE, head_y)
+    snake.insert(0, new_head)
+    snake.pop()
+
+def on_key_press(event):
+    global direction
+    key = event.keysym
+    if key in directions:
+        if (key == "Up" and direction != "Down" or
+            key == "Down" and direction != "Up" or
+            key == "Left" and direction != "Right" or
+            key == "Right" and direction != "Left"):
+            direction = key
+root.bind("<KeyPress>", on_key_press)
+                    
 def clear_screen():
     for btn in current_buttons:
         btn.destroy()
@@ -60,7 +86,8 @@ def exit_game():
     root.destroy()
 
 def start_game():
-    global game, food, score
+    global game, food, score, snake
+    move_snake()
     clear_screen()
     canvas.delete("all")
     draw_food()
